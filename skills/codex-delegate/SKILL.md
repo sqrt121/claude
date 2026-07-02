@@ -58,6 +58,11 @@ it?* Classes:
 - **keep** — the insight IS the work: root-causing, cross-surface design, anything
   touching a repo's invariants themselves.
 
+Specifiability is not the only axis — weight by reversibility. One-way-door decisions
+(schemas, API contracts, data-migration semantics, public interfaces) are yours even
+inside a delegated task: make them explicitly in the contract, never leave them to the
+executor. The reversible execution around them stays delegable.
+
 If the user explicitly ordered delegation on a "keep"-class task, delegate anyway but
 state the classification and the risk first.
 
