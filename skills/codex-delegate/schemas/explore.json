@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Structured output schema for Codex exploration reports. Used with codex exec --output-schema.",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["COMPLETE", "PARTIAL", "BLOCKED"],
+      "description": "COMPLETE: every numbered question answered. PARTIAL: some answered; rest in open_questions. BLOCKED: could not investigate; reason in open_questions."
+    },
+    "summary": {
+      "type": "string",
+      "description": "3-6 sentence synthesis of the most important findings, written for the reviewer."
+    },
+    "findings": {
+      "type": "array",
+      "description": "One entry per numbered question in the brief, in order.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "description": "The brief question, verbatim or by number."
+          },
+          "answer": {
+            "type": "string",
+            "description": "Direct answer. Facts only; no speculation beyond the stated confidence."
+          },
+          "evidence": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Repo-relative file:line references backing the answer."
+          },
+          "confidence": {
+            "type": "string",
+            "enum": ["certain", "likely", "unsure"],
+            "description": "certain: verified by reading the code. likely: strong indication, not fully traced. unsure: lead only — weak or no evidence."
+          }
+        },
+        "required": ["question", "answer", "evidence", "confidence"],
+        "additionalProperties": false
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "What could not be answered and why, plus anything discovered that the reviewer should know."
+    }
+  },
+  "required": ["status", "summary", "findings", "open_questions"],
+  "additionalProperties": false
+}

@@ -5,8 +5,13 @@ Version-controlled Claude Code assets (user-wide, machine: sqrt121).
 ## Layout
 
 ```
-skills/           # personal skills, symlinked into ~/.claude/skills/<name>
-  codex-implement/  # Fable-only: delegate plan-determined implementation to GPT-5.5 xhigh via Codex CLI
+skills/            # personal skills, symlinked into ~/.claude/skills/<name>
+  codex-delegate/  # Fable-only: delegate work to GPT-5.5 xhigh via Codex CLI
+    SKILL.md         # shared core: model gate, triage, plumbing, escalation
+    references/      # per-mode protocol: implement.md, explore.md, test.md
+    schemas/         # per-mode strict output schemas for codex exec --output-schema
+claude-home/
+  CLAUDE.md        # user-global instructions, symlinked to ~/.claude/CLAUDE.md
 ```
 
 ## Install (new machine / after clone)
@@ -15,15 +20,17 @@ skills/           # personal skills, symlinked into ~/.claude/skills/<name>
 ./install.sh
 ```
 
-Creates one symlink per skill: `~/.claude/skills/<name>` -> `skills/<name>`.
-Idempotent; refuses to overwrite a real (non-symlink) directory.
+Symlinks each skill (`~/.claude/skills/<name>` -> `skills/<name>`) and the user-global
+CLAUDE.md. Idempotent; refuses to overwrite real (non-symlink) files.
 
 ## Editing
 
-Edit files here directly — `~/.claude/skills/*` are symlinks into this repo, so
-changes are live immediately. Commit as you go.
+Edit files here directly — the `~/.claude` entries are symlinks into this repo, so
+changes are live immediately (symlink discovery confirmed working, including mid-session
+re-scans). Commit as you go.
 
 ## Design notes
 
-The delegation workflow (why contracts, punch-list economics, escalation rules,
-Fable-only gating) is documented inside `skills/codex-implement/SKILL.md` itself.
+The delegation design (contract/brief templates, punch-list economics, bounded
+correction rounds, escalation rules, Fable-only gating, thread chaining across modes)
+is documented inside `skills/codex-delegate/SKILL.md` and its `references/`.

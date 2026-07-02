@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Structured output schema for Codex test-run reports. Used with codex exec --output-schema.",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["COMPLETE", "PARTIAL", "BLOCKED"],
+      "description": "COMPLETE: every run in the brief executed (pass or fail). PARTIAL: some runs executed. BLOCKED: nothing could run."
+    },
+    "summary": {
+      "type": "string",
+      "description": "What ran and headline pass/fail counts, written for the reviewer."
+    },
+    "runs": {
+      "type": "array",
+      "description": "One entry per numbered run in the brief, in order.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "Exact command executed."
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "log_file": {
+            "type": "string",
+            "description": "Absolute path of the tee'd full log file."
+          },
+          "failures": {
+            "type": "array",
+            "description": "Empty when passed.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Test / flow / case identifier."
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": ["assertion", "error", "timeout", "flake_suspected", "setup"]
+                },
+                "detail": {
+                  "type": "string",
+                  "description": "Distilled cause, max ~5 lines."
+                },
+                "log_ref": {
+                  "type": "string",
+                  "description": "Log file plus line range, e.g. logs/01-unit.log:1042-1088."
+                },
+                "repro": {
+                  "type": "string",
+                  "description": "Minimal command to reproduce just this failure."
+                }
+              },
+              "required": ["name", "kind", "detail", "log_ref", "repro"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["command", "passed", "log_file", "failures"],
+        "additionalProperties": false
+      }
+    },
+    "environment_notes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Runtime versions, required env vars, skipped suites, setup quirks."
+    }
+  },
+  "required": ["status", "summary", "runs", "environment_notes"],
+  "additionalProperties": false
+}
