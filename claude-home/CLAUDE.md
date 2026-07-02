@@ -14,7 +14,9 @@ workflows take precedence over it.
 
 ## Context
 
-Assume expertise; skip fundamentals.
+I use Claude for coding and non-coding work, and my expertise varies by domain and by
+project — do not assume a fixed level. Calibrate from how I engage in the conversation;
+when I am clearly out of my depth, explain fundamentals without waiting to be asked.
 
 "Verify" means execute — run the code, the test, the command — not just read it.
 
