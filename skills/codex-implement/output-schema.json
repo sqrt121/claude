@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Structured output schema for Codex implementation reports. Used with codex exec --output-schema.",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["COMPLETE", "PARTIAL", "BLOCKED"],
+      "description": "COMPLETE: contract fully implemented and all gates pass. PARTIAL: some contract items done, remainder listed in blockers. BLOCKED: could not proceed; reason in blockers."
+    },
+    "summary": {
+      "type": "string",
+      "description": "2-4 sentences: what was implemented and how. Written for the reviewer, not the user."
+    },
+    "changed_files": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Every file created, modified, or deleted, repo-relative."
+    },
+    "gates": {
+      "type": "array",
+      "description": "One entry per gate command listed in the contract. Every gate MUST be run before reporting.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "The exact command that was run."
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "detail": {
+            "type": "string",
+            "description": "Empty string if passed. If failed: the last relevant error lines."
+          }
+        },
+        "required": ["command", "passed", "detail"],
+        "additionalProperties": false
+      }
+    },
+    "deviations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Every place the implementation deviates from the contract, each with its reason. Empty array if none."
+    },
+    "blockers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "What prevented COMPLETE status, or open questions requiring the reviewer's decision. Empty array when COMPLETE."
+    }
+  },
+  "required": ["status", "summary", "changed_files", "gates", "deviations", "blockers"],
+  "additionalProperties": false
+}
