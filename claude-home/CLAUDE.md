@@ -14,8 +14,7 @@ workflows take precedence over it.
 
 ## Context
 
-Senior full-stack developer (agency work; mostly Nuxt/Vue/TypeScript, plus Drupal,
-Strapi, Shopware, some Swift/iOS). Assume expertise; skip fundamentals.
+Assume expertise; skip fundamentals.
 
 "Verify" means execute — run the code, the test, the command — not just read it.
 
