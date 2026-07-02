@@ -19,13 +19,16 @@ for skill in "$REPO_DIR"/skills/*/; do
   echo "linked $name"
 done
 
-# User-global CLAUDE.md
-target="$HOME/.claude/CLAUDE.md"
-if [ -L "$target" ]; then
-  rm "$target"
-elif [ -e "$target" ]; then
-  echo "SKIP CLAUDE.md: $target exists and is not a symlink — resolve manually" >&2
-  exit 0
-fi
-ln -s "$REPO_DIR/claude-home/CLAUDE.md" "$target"
-echo "linked CLAUDE.md"
+# User-global files (claude-home/<name> -> ~/.claude/<name>)
+for f in "$REPO_DIR"/claude-home/*; do
+  name="$(basename "$f")"
+  target="$HOME/.claude/$name"
+  if [ -L "$target" ]; then
+    rm "$target"
+  elif [ -e "$target" ]; then
+    echo "SKIP $name: $target exists and is not a symlink — resolve manually" >&2
+    continue
+  fi
+  ln -s "$f" "$target"
+  echo "linked $name"
+done

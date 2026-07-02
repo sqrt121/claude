@@ -10,8 +10,9 @@ skills/            # personal skills, symlinked into ~/.claude/skills/<name>
     SKILL.md         # shared core: model gate, triage, plumbing, escalation
     references/      # per-mode protocol: implement.md, explore.md, test.md
     schemas/         # per-mode strict output schemas for codex exec --output-schema
-claude-home/
-  CLAUDE.md        # user-global instructions, symlinked to ~/.claude/CLAUDE.md
+claude-home/       # user-global files, each symlinked to ~/.claude/<name>
+  CLAUDE.md              # user-global instructions
+  statusline-command.sh  # statusline (repo | branch± | model | effort | ctx% + headroom + >200k | ±lines | $ | rate windows ↻ resets)
 ```
 
 ## Install (new machine / after clone)
