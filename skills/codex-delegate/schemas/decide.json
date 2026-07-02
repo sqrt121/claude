@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Structured output schema for blind-ensemble decision recommendations. Used with codex exec --output-schema.",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["COMPLETE", "BLOCKED"],
+      "description": "COMPLETE: a recommendation is made. BLOCKED: the brief is insufficient to decide; say why in rationale."
+    },
+    "recommendation": {
+      "type": "string",
+      "description": "The recommended option, stated plainly and unambiguously. Empty string only when BLOCKED."
+    },
+    "rationale": {
+      "type": "string",
+      "description": "Why this option wins against the brief's evaluation criteria, grounded in the constraints and (where relevant) the codebase."
+    },
+    "risks": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "What could make this recommendation wrong, and what would signal that early."
+    },
+    "rejected_alternatives": {
+      "type": "array",
+      "description": "One entry per option from the brief that was not chosen.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "option": { "type": "string" },
+          "reason": { "type": "string" }
+        },
+        "required": ["option", "reason"],
+        "additionalProperties": false
+      }
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["certain", "likely", "unsure"],
+      "description": "How strongly the evidence supports the recommendation."
+    }
+  },
+  "required": ["status", "recommendation", "rationale", "risks", "rejected_alternatives", "confidence"],
+  "additionalProperties": false
+}

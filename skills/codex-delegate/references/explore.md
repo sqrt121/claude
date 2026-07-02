@@ -6,6 +6,12 @@ the file reads; you read a two-page report. Best economics of the three modes.
 When: map how a subsystem works, find where behavior lives, inventory usages/patterns,
 gather facts before a design or an implement contract.
 
+Not for point lookups. "Where is X defined", "which version of Y", "does Z exist" —
+answer those yourself with rg/glob in seconds: deterministic, no fidelity risk, no
+round trip. Delegate only when the deliverable is synthesis across many reads (map a
+subsystem, trace a flow, inventory a pattern). A delegated round trip on a one-grep
+question adds a trust surface for nothing.
+
 ## Brief template (`$STATE_DIR/brief-explore.md`)
 
 ```markdown

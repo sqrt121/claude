@@ -1,6 +1,6 @@
 ---
 name: codex-delegate
-description: Delegate work to GPT-5.5 xhigh via Codex CLI under supervision, in three modes - implement (contract -> code -> diff review + gates), explore (questions -> findings with file:line evidence), test (verbose runs -> logs on disk + distilled failures). Modes chain on one Codex thread. FABLE-ONLY - this workflow exists to conserve Claude Fable 5 tokens; if the running model is not Fable (model ID does not start with claude-fable), never self-select this skill, do the work directly instead. Use when the user says "delegate", "codex", "hand this off", or as Fable whenever a task's deliverable can be specified without producing it (plan-determined implementation, codebase exploration, verbose test runs).
+description: Delegate work to GPT-5.5 xhigh via Codex CLI under supervision, in four modes - implement (contract -> code -> diff review + gates), explore (questions -> findings with file:line evidence), test (verbose runs -> logs on disk + distilled failures), decide (blind Opus + Codex ensemble on one-way-door decisions, Fable adjudicates). Modes chain on one Codex thread. FABLE-ONLY - this workflow exists to conserve Claude Fable 5 tokens; if the running model is not Fable (model ID does not start with claude-fable), never self-select this skill, do the work directly instead. Use when the user says "delegate", "codex", "hand this off", or as Fable whenever a task's deliverable can be specified without producing it (plan-determined implementation, codebase exploration, verbose test runs, contested irreversible decisions).
 ---
 
 # Codex Delegate — supervised delegation to GPT-5.5 xhigh
@@ -16,6 +16,7 @@ Modes — before writing a brief, read the mode's reference file and use its sch
 | implement | working-tree diff meeting a contract         | `references/implement.md` | `schemas/implement.json` |
 | explore   | cited findings answering numbered questions  | `references/explore.md`   | `schemas/explore.json`   |
 | test      | verbose runs, logs on disk, distilled failures | `references/test.md`    | `schemas/test.json`      |
+| decide    | adjudicated one-way-door decision, from blind Opus + Codex recommendations | `references/ensemble.md` | `schemas/decide.json` |
 
 ## Step 0 — Model gate (check before anything else)
 
@@ -61,7 +62,9 @@ it?* Classes:
 Specifiability is not the only axis — weight by reversibility. One-way-door decisions
 (schemas, API contracts, data-migration semantics, public interfaces) are yours even
 inside a delegated task: make them explicitly in the contract, never leave them to the
-executor. The reversible execution around them stays delegable.
+executor. The reversible execution around them stays delegable. When such a decision is
+genuinely contested and expensive to unwind, use decide mode (blind ensemble,
+`references/ensemble.md`) before writing the contract.
 
 If the user explicitly ordered delegation on a "keep"-class task, delegate anyway but
 state the classification and the risk first.
@@ -171,3 +174,9 @@ aborted. Implement mode leaves everything uncommitted — committing is the user
 - Your irreducible cost is the brief plus the review. If reviewing properly would cost
   as much as doing the work, that is triage information — the savings may not exist.
 - One `codex exec` round trip per iteration. No conversational back-and-forth.
+- Effort tiers: brief-writing and one-way-door adjudication are where high/max
+  reasoning pays; report-reading, gate re-runs, and mechanical diff review hold up at
+  medium. Session effort is the user's `/effort` dial — when a long stretch of one
+  kind is ahead, say so and suggest the tier. Codex's effort is pinned separately in
+  `~/.codex/config.toml`; subagents are untouched by this (user policy: opus or
+  stronger at highest available effort).
