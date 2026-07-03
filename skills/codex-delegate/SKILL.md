@@ -74,6 +74,7 @@ state the classification and the risk first.
 ```bash
 codex --version   # expect >= 0.140; exec/resume/-o/--output-schema validated on 0.140.0
 grep -E '^(model|model_reasoning_effort)' ~/.codex/config.toml   # expect gpt-5.5 / xhigh; warn if not, proceed (config.toml is the user's source of truth)
+grep '"packageManager"' "$REPO_ROOT/package.json" 2>/dev/null || echo "PM UNPINNED"  # JS repos only
 
 SKILL_DIR="$HOME/.claude/skills/codex-delegate"
 REPO_ROOT=$(git rev-parse --show-toplevel)
@@ -82,6 +83,10 @@ BRANCH_KEY=$(printf "%s" "$BRANCH" | tr '/:' '__' | tr -c 'A-Za-z0-9._-' '_')
 STATE_DIR="$HOME/.claude/codex-work/$(basename "$REPO_ROOT")-${BRANCH_KEY}"
 mkdir -p "$STATE_DIR"
 ```
+
+If a JS repo pins no `packageManager`, name the required package-manager major in the
+brief's Rules (match the lockfile) — executors resolve their own PATH, and a mismatched
+major has aborted gate runs live (a pnpm 11 shell against a pnpm-10 layout).
 
 State lives user-level, never inside the target repo. If `git status --porcelain` is
 non-empty, snapshot the baseline so review attributes only the delta to Codex:
@@ -102,8 +107,12 @@ task family — reuse its skeletons and reviewer checklist.
 Write `$STATE_DIR/brief-<mode>-<topic>.md` (topic = short task slug; use one even for
 the first contract — real runs grow to several contracts per mode) using the mode
 reference's template. This is the high-effort step — spend the thinking here, not in
-corrections later. All briefs carry the mode's Rules block verbatim (commit
-prohibition, scope limits, read-only where it applies).
+corrections later. Scale the brief to the blast radius, not to the template: sections
+are a menu, not a form. A small, reversible task needs only Objective / In scope /
+Gates / Rules; the heavyweight sections earn their place when the diff is wide, repo
+invariants are at stake, or a wrong choice is expensive to unwind. All briefs carry
+the mode's Rules block verbatim (commit prohibition, scope limits, read-only where it
+applies).
 
 ## Step 4 — Execute
 
@@ -165,9 +174,13 @@ The procedure is mode-specific (reference file). Universal minimums:
 
 1. Correction rounds are bounded per mode (implement: 2, explore: 1, test: 1).
    Exceeded → abort = take over yourself.
-2. Corrections must be specifiable without doing the thinking. The moment a correction
-   requires explaining WHY an approach is wrong, or re-deriving the answer yourself,
-   delegation has already failed — abort immediately; do not spend a round teaching.
+2. Corrections must be specifiable without doing the thinking — never spend a round
+   teaching or arguing WHY an approach is wrong. Design-level errors are yours to
+   diagnose; but once you have done that thinking and can state the repair as exact
+   mechanical instructions (change X to Y at these sites), spending one round having
+   Codex apply it is legitimate — cheaper than hand-editing when the repair is wide.
+   The per-mode round caps still bind, and a second design-level error on the same
+   contract means the task was misclassified: abort.
 3. A false claim found in verification (bogus citation, false green, misreported gate) →
    distrust the entire report: verify everything load-bearing yourself or redo the work.
 4. Abort = salvage what is mechanically sound, do the rest yourself, and tell the user
@@ -194,3 +207,11 @@ aborted. Implement mode leaves everything uncommitted — committing is the user
   kind is ahead, say so and suggest the tier. Codex's effort is pinned separately in
   `~/.codex/config.toml`; subagents are untouched by this (user policy: opus or
   stronger at highest available effort).
+
+## Maintenance (rule budget)
+
+New rules enter this skill only after an observed failure, citing the incident inline.
+Prefer structural enforcement (schema fields, wrapper checks) over more prose. A rule
+that cannot name its incident, or never fires across several runs, is a deletion
+candidate. The failure mode of this document is not missing rules; it is becoming long
+enough that its own operator skims it.

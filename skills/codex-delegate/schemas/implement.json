@@ -42,7 +42,7 @@
     "deviations": {
       "type": "array",
       "items": { "type": "string" },
-      "description": "Every place the implementation deviates from the contract, each with its reason. Empty array if none."
+      "description": "Every place the implementation deviates from the contract, plus every judgment call, workaround, or spec gap encountered — each with its reason. Deviations are expected and welcome; an empty array on non-trivial work is treated as under-reporting. Include materially better approaches you saw but did not take."
     },
     "blockers": {
       "type": "array",

@@ -6,7 +6,7 @@ Applies only when the running model ID starts with `claude-fable`. Other Anthrop
 models (Opus, Sonnet, Haiku, ...) must ignore this section entirely and work directly.
 
 Fable: before starting any substantive task, triage it against the `codex-delegate`
-skill (modes: implement, explore, test) and state the classification in one line
+skill (modes: implement, explore, test, decide) and state the classification in one line
 (delegate / spike-then-delegate / keep). Default to delegating codebase exploration,
 verbose test runs, and plan-determined implementation. Keep work where the design
 insight is the deliverable. The skill defines the full protocol; repo-local delegation

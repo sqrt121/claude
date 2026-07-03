@@ -39,6 +39,10 @@ Follow AGENTS.md / CLAUDE.md at <paths>.        <!-- Codex reads AGENTS.md nativ
 - Do NOT commit, stage, branch, push, or tag. Leave all changes in the working tree.
 - Do not touch out-of-scope files. If you believe you must, stop and report BLOCKED with the reason.
 - Do not add dependencies unless listed above.
+- Deviations are expected and welcome: report EVERY judgment call, workaround, or spec
+  gap in `deviations`. A zero-deviation report on non-trivial work reads as
+  under-reporting, not perfection. If you see a materially better approach, implement
+  the contract as written and describe the alternative in `deviations`.
 ```
 
 Gates are discovered from package.json scripts (typecheck/lint/test/build), Makefile
@@ -51,6 +55,8 @@ everything and the savings shrink.
 ```
 Implement the contract fully. Follow AGENTS.md / CLAUDE.md conventions where present.
 Run every gate listed in the contract and fix failures before reporting.
+Report every judgment call you made in the deviations field — deviations are expected
+and welcome; an empty list on non-trivial work is treated as under-reporting.
 Do NOT commit, stage, branch, or push — leave all changes in the working tree.
 ```
 
