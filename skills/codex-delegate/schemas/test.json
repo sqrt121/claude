@@ -65,12 +65,35 @@
         "additionalProperties": false
       }
     },
+    "anomalies": {
+      "type": "array",
+      "description": "Every console error, unexpected warning, or off-script observation across ALL runs, enumerated VERBATIM — even when target assertions passed. Never classify anything as expected, noise, or pre-existing; that classification belongs to the reviewer. Empty only if genuinely nothing unexpected was observed.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Verbatim message or observation."
+          },
+          "log_ref": {
+            "type": "string",
+            "description": "Log file plus line range where it appears, e.g. logs/04-forms.log:25."
+          },
+          "occurrences": {
+            "type": "string",
+            "description": "Which runs/pages it appeared on and roughly how often."
+          }
+        },
+        "required": ["text", "log_ref", "occurrences"],
+        "additionalProperties": false
+      }
+    },
     "environment_notes": {
       "type": "array",
       "items": { "type": "string" },
-      "description": "Runtime versions, required env vars, skipped suites, setup quirks."
+      "description": "Runtime versions, required env vars, skipped suites, setup quirks. NOT for errors/warnings — those go in anomalies."
     }
   },
-  "required": ["status", "summary", "runs", "environment_notes"],
+  "required": ["status", "summary", "runs", "anomalies", "environment_notes"],
   "additionalProperties": false
 }

@@ -8,7 +8,7 @@ When: a "keep"-class one-way door where the answer is genuinely contested and be
 wrong is expensive to unwind. Most one-way doors need judgment, not a committee — the
 rough gate: would the wrong choice cost a day or more to reverse? If not, just decide.
 
-## Brief template (`$STATE_DIR/brief-decide.md`)
+## Brief template (`$STATE_DIR/brief-decide-<topic>.md`)
 
 ```markdown
 # Decision brief: <question>

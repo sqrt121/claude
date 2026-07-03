@@ -3,7 +3,7 @@
 Deliverable: a working-tree diff meeting a contract. Codex codes; you review the diff
 against hard gates.
 
-## Brief template (`$STATE_DIR/brief-implement.md`)
+## Brief template (`$STATE_DIR/brief-implement-<topic>.md`)
 
 ```markdown
 # Contract: <task title>
@@ -56,7 +56,10 @@ Do NOT commit, stage, branch, or push — leave all changes in the working tree.
 
 ## Verify
 
-1. Read the report: status, deviations, blockers.
+1. Read the report: status, deviations, blockers. Treat an empty `deviations` array as
+   unverified, not as absence — implement rounds under-report design decisions
+   (observed repeatedly in live runs); the diff review is where deviations are actually
+   found, even on green gates.
 2. **Re-run the gates yourself.** Never approve on Codex's claim of green.
 3. Review the diff: `git status --short`, then `git diff` (minus baseline if one was
    snapshotted). Check: scope respected (no out-of-scope files changed), invariants
@@ -75,7 +78,7 @@ hunk, implement the rest yourself).
 
 ```bash
 codex exec resume "$THREAD_ID" --json \
-  -o "$STATE_DIR/last-message.json" \
+  -o "$STATE_DIR/last-message-<topic>.json" \
   --dangerously-bypass-approvals-and-sandbox \
   --output-schema "$SKILL_DIR/schemas/implement.json" \
   "[Context: Fable review, correction round <N> of 2.]
@@ -85,7 +88,7 @@ PUNCH LIST — mechanical fixes only, apply exactly as written:
 2. ...
 
 Re-run all gates from the contract. Do NOT commit. Report using the JSON schema." \
-  > "$STATE_DIR/exec-implement-<N+1>.jsonl" 2>&1
+  > "$STATE_DIR/exec-implement-<topic>-<N+1>.jsonl" 2>&1
 ```
 
 ## Chaining

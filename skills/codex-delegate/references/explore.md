@@ -12,7 +12,7 @@ round trip. Delegate only when the deliverable is synthesis across many reads (m
 subsystem, trace a flow, inventory a pattern). A delegated round trip on a one-grep
 question adds a trust surface for nothing.
 
-## Brief template (`$STATE_DIR/brief-explore.md`)
+## Brief template (`$STATE_DIR/brief-explore-<topic>.md`)
 
 ```markdown
 # Exploration brief: <topic>

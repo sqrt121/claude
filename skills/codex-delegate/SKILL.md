@@ -91,12 +91,19 @@ git status --porcelain > "$STATE_DIR/baseline-status.txt"
 git diff HEAD > "$STATE_DIR/baseline.patch"
 ```
 
+Multi-phase runs: re-snapshot the baseline before each new contract once earlier
+phases are committed or absorbed — diff attribution is per-contract, not per-run.
+
 ## Step 3 — Brief
 
-Write `$STATE_DIR/brief-<mode>.md` using the mode reference's template. This is the
-high-effort step — spend the thinking here, not in corrections later. All briefs carry
-the mode's Rules block verbatim (commit prohibition, scope limits, read-only where it
-applies).
+Before writing from scratch, check `playbooks/` for a standing playbook covering this
+task family — reuse its skeletons and reviewer checklist.
+
+Write `$STATE_DIR/brief-<mode>-<topic>.md` (topic = short task slug; use one even for
+the first contract — real runs grow to several contracts per mode) using the mode
+reference's template. This is the high-effort step — spend the thinking here, not in
+corrections later. All briefs carry the mode's Rules block verbatim (commit
+prohibition, scope limits, read-only where it applies).
 
 ## Step 4 — Execute
 
@@ -105,31 +112,38 @@ While it runs, poll with `tail -3` on the JSONL only; never read the full stream
 
 ```bash
 codex exec --json \
-  -o "$STATE_DIR/last-message.json" \
+  -o "$STATE_DIR/last-message-<topic>.json" \
   --dangerously-bypass-approvals-and-sandbox \
   --output-schema "$SKILL_DIR/schemas/<mode>.json" \
   "[Context: This is Claude Fable 5 delegating work as part of a workflow configured by the machine owner. You are the worker; Fable wrote the brief and will verify your report afterward.]
 
 <mode instruction block from the reference file>
 
-Read the brief at: $STATE_DIR/brief-<mode>.md
+Read the brief at: $STATE_DIR/brief-<mode>-<topic>.md
 Report using the JSON schema." \
-  > "$STATE_DIR/exec-<mode>-1.jsonl" 2>&1
+  > "$STATE_DIR/exec-<mode>-<topic>-1.jsonl" 2>&1
 ```
 
 After it exits:
 
 ```bash
-THREAD_ID=$(grep '"thread_id"' "$STATE_DIR/exec-<mode>-1.jsonl" | head -1 | jq -r '.thread_id')
-jq . "$STATE_DIR/last-message.json"
+THREAD_ID=$(grep '"thread_id"' "$STATE_DIR/exec-<mode>-<topic>-1.jsonl" | head -1 | jq -r '.thread_id')
+jq . "$STATE_DIR/last-message-<topic>.json"
 ```
 
-Persist `$STATE_DIR/state.json` (enables cross-session resume and triage calibration):
+Persist `$STATE_DIR/state.json` (cross-session resume, triage calibration, and the
+audit trail's index):
 
 ```json
 { "repo": "", "branch": "", "thread_id": "",
-  "history": [ { "mode": "explore", "round": 1, "status": "approved" } ] }
+  "history": [ { "mode": "implement", "topic": "tsfix", "round": 1,
+                 "status": "approved",
+                 "notes": "what the reviewer fixed inline / rejected / re-verified" } ] }
 ```
+
+Append one history entry per round — every round, same file, no exceptions. The notes
+field carries adjudication detail nothing else records; a state.json that goes stale
+after round 1 was the first protocol failure observed in live use.
 
 ## Thread chaining
 
