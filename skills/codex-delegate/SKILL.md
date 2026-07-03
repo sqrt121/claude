@@ -77,18 +77,21 @@ and the fallback. From the target repo:
 ```bash
 DELEGATE="$HOME/.claude/skills/codex-delegate/bin/delegate.sh"
 "$DELEGATE" init <mode> <topic>              # state dir, baseline snapshot, preflight; prints STATE_DIR + brief path
-"$DELEGATE" exec <mode> <topic> <<'EOF'      # full flag set, per-topic naming, thread capture; prompt on stdin
+"$DELEGATE" exec <mode> <topic> [--resume|--fresh] <<'EOF'   # full flag set, per-topic naming, thread capture; prompt on stdin
 <context preamble + mode instruction block + brief pointer>
 EOF
 "$DELEGATE" append <mode> <topic> <approved|corrected|rejected|aborted> "<adjudication notes>"
 "$DELEGATE" status
 ```
 
-An un-adjudicated round structurally blocks the next `exec`/`init` (`--force`
-overrides); `append` is how a round closes. Round numbers auto-increment; round ≥ 2
-resumes the stored thread automatically — except decide mode, which always gets a
-fresh thread. Prose-patching the stale-state failure didn't survive contact with live
-runs; this wrapper is the structural fix.
+An un-adjudicated round — including a FAILED exec — structurally blocks the next
+`exec`/`init` (`--force` overrides); `append` is how a round closes, failed rounds as
+`aborted`/`rejected`. Round numbers auto-increment; thread control defaults to fresh
+at round 1 and resume at round ≥ 2. Override per task: `--resume` at round 1 chains a
+new mode onto the stored thread (the explore → implement → test chain); `--fresh` at
+round ≥ 2 retries after an aborted round without the possibly-poisoned thread. decide
+mode never resumes and refuses `--resume`. Prose-patching the stale-state failure
+didn't survive contact with live runs; this wrapper is the structural fix.
 
 ## Step 2 — Preflight and state (all modes)
 
@@ -178,8 +181,8 @@ after round 1 was the first protocol failure observed in live use.
 
 ## Thread chaining
 
-Reuse the thread with `codex exec resume "$THREAD_ID"` whenever a later mode benefits
-from earlier context — the natural chain is explore → implement → test: the implementer
+Reuse the thread with `codex exec resume "$THREAD_ID"` (wrapper: `exec <mode> <topic>
+--resume` at round 1) whenever a later mode benefits from earlier context — the natural chain is explore → implement → test: the implementer
 already knows what exploration read; the tester knows what was built. Start a fresh
 `codex exec` only for unrelated work. One active thread_id per state dir.
 

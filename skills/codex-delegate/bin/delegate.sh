@@ -6,7 +6,7 @@ usage() {
   cat >&2 <<'EOF'
 usage:
   delegate.sh init <mode> <topic> [--force]
-  delegate.sh exec <mode> <topic> [--force]
+  delegate.sh exec <mode> <topic> [--force] [--resume|--fresh]
   delegate.sh append [--round N] <mode> <topic> <status> <notes...>
   delegate.sh status
 
@@ -225,16 +225,31 @@ capture_thread_id() {
   printf "%s\n" "$line" | jq -r '.thread_id // empty' 2>/dev/null || true
 }
 
+set_open_round() {
+  local mode="$1"
+  local topic="$2"
+  local round="$3"
+
+  atomic_jq_state --arg mode "$mode" --arg topic "$topic" --argjson round "$round" \
+    '.open_round = {mode: $mode, topic: $topic, round: $round}'
+}
+
 cmd_exec() {
   local mode="$1"
   local topic="$2"
   local force="$3"
-  local brief last_message jsonl round thread_id status rc
+  local thread_control="$4"
+  local brief schema_file last_message jsonl round thread_id status rc resume
   local -a cmd
 
   require_state
   brief="$STATE_DIR/brief-$mode-$topic.md"
   [ -f "$brief" ] || die "missing brief: $brief"
+  schema_file="$SKILL_DIR/schemas/$mode.json"
+  [ -f "$schema_file" ] || die "missing schema: $schema_file"
+  if [ "$mode" = "decide" ] && [ "$thread_control" = "resume" ]; then
+    die "decide mode never resumes"
+  fi
   read_stdin_prompt
   refuse_open_round_unless_forced "$force"
 
@@ -243,12 +258,29 @@ cmd_exec() {
   jsonl="$STATE_DIR/exec-$mode-$topic-$round.jsonl"
   : > "$last_message"
 
-  if [ "$round" -eq 1 ] || [ "$mode" = "decide" ]; then
-    cmd=("$CODEX_BIN" exec --json -o "$last_message" --dangerously-bypass-approvals-and-sandbox --output-schema "$SKILL_DIR/schemas/$mode.json" "$PROMPT")
-  else
+  resume=0
+  if [ "$mode" != "decide" ]; then
+    case "$thread_control" in
+      resume)
+        resume=1
+        ;;
+      fresh)
+        resume=0
+        ;;
+      auto)
+        if [ "$round" -gt 1 ]; then
+          resume=1
+        fi
+        ;;
+    esac
+  fi
+
+  if [ "$resume" = "1" ]; then
     thread_id="$(jq -r '.thread_id // ""' "$STATE_FILE")"
     [ -n "$thread_id" ] || die "missing thread_id for resume"
-    cmd=("$CODEX_BIN" exec resume "$thread_id" --json -o "$last_message" --dangerously-bypass-approvals-and-sandbox --output-schema "$SKILL_DIR/schemas/$mode.json" "$PROMPT")
+    cmd=("$CODEX_BIN" exec resume "$thread_id" --json -o "$last_message" --dangerously-bypass-approvals-and-sandbox --output-schema "$schema_file" "$PROMPT")
+  else
+    cmd=("$CODEX_BIN" exec --json -o "$last_message" --dangerously-bypass-approvals-and-sandbox --output-schema "$schema_file" "$PROMPT")
   fi
 
   set +e
@@ -264,12 +296,12 @@ cmd_exec() {
   if [ "$rc" -ne 0 ] ||
     [ -z "$thread_id" ] ||
     ! jq -e '.status | strings | select(length > 0)' "$last_message" >/dev/null 2>&1; then
+    set_open_round "$mode" "$topic" "$round"
     echo "jsonl: $jsonl" >&2
     exit 1
   fi
 
-  atomic_jq_state --arg mode "$mode" --arg topic "$topic" --argjson round "$round" \
-    '.open_round = {mode: $mode, topic: $topic, round: $round}'
+  set_open_round "$mode" "$topic" "$round"
 
   status="$(jq -r '.status' "$last_message")"
   echo "round=$round"
@@ -342,7 +374,7 @@ parse_force_tail() {
 }
 
 main() {
-  local subcommand mode topic force round_arg status
+  local subcommand mode topic force round_arg status thread_control want_resume want_fresh
 
   [ "$#" -gt 0 ] || usage
   subcommand="$1"
@@ -359,13 +391,43 @@ main() {
       cmd_init "$mode" "$topic" "$force"
       ;;
     exec)
-      force="$(parse_force_tail "$@")"
+      [ "$#" -ge 2 ] || usage
       mode="$1"
       topic="$2"
+      shift 2
       is_mode "$mode" || usage
       is_topic "$topic" || usage
+      force=0
+      want_resume=0
+      want_fresh=0
+      while [ "$#" -gt 0 ]; do
+        case "$1" in
+          --force)
+            force=1
+            ;;
+          --resume)
+            want_resume=1
+            ;;
+          --fresh)
+            want_fresh=1
+            ;;
+          *)
+            usage
+            ;;
+        esac
+        shift
+      done
+      if [ "$want_resume" = "1" ] && [ "$want_fresh" = "1" ]; then
+        usage
+      fi
+      thread_control=auto
+      if [ "$want_resume" = "1" ]; then
+        thread_control=resume
+      elif [ "$want_fresh" = "1" ]; then
+        thread_control=fresh
+      fi
       init_paths
-      cmd_exec "$mode" "$topic" "$force"
+      cmd_exec "$mode" "$topic" "$force" "$thread_control"
       ;;
     append)
       round_arg=""
