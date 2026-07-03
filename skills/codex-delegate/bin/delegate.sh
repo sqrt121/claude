@@ -239,7 +239,7 @@ cmd_exec() {
   local topic="$2"
   local force="$3"
   local thread_control="$4"
-  local brief schema_file last_message jsonl round thread_id status rc resume
+  local brief schema_file last_message jsonl round thread_id status rc resume last_history_status
   local -a cmd
 
   require_state
@@ -249,6 +249,15 @@ cmd_exec() {
   [ -f "$schema_file" ] || die "missing schema: $schema_file"
   if [ "$mode" = "decide" ] && [ "$thread_control" = "resume" ]; then
     die "decide mode never resumes"
+  fi
+  if [ "$mode" != "decide" ] && [ "$thread_control" = "auto" ]; then
+    last_history_status="$(jq -r --arg mode "$mode" --arg topic "$topic" \
+      '([.history[] | select(.mode == $mode and .topic == $topic)] | last | .status) // ""' "$STATE_FILE")"
+    case "$last_history_status" in
+      aborted|rejected)
+        die "last $mode/$topic round was $last_history_status; pass --resume or --fresh explicitly"
+        ;;
+    esac
   fi
   read_stdin_prompt
   refuse_open_round_unless_forced "$force"

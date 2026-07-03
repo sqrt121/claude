@@ -89,7 +89,9 @@ An un-adjudicated round — including a FAILED exec — structurally blocks the 
 `aborted`/`rejected`. Round numbers auto-increment; thread control defaults to fresh
 at round 1 and resume at round ≥ 2. Override per task: `--resume` at round 1 chains a
 new mode onto the stored thread (the explore → implement → test chain); `--fresh` at
-round ≥ 2 retries after an aborted round without the possibly-poisoned thread. decide
+round ≥ 2 retries after an aborted round without the possibly-poisoned thread. After
+an `aborted`/`rejected` round the wrapper refuses the default and demands `--resume`
+or `--fresh` — poisoned-vs-salvageable is the reviewer's call, never a default. decide
 mode never resumes and refuses `--resume`. Prose-patching the stale-state failure
 didn't survive contact with live runs; this wrapper is the structural fix.
 
