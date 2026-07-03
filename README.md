@@ -8,6 +8,7 @@ Version-controlled Claude Code assets (user-wide, machine: sqrt121).
 skills/            # personal skills, symlinked into ~/.claude/skills/<name>
   codex-delegate/  # Fable-only: delegate work to GPT-5.5 xhigh via Codex CLI
     SKILL.md         # shared core: model gate, triage, plumbing, escalation
+    bin/delegate.sh  # mechanical rails: init/exec/append/status, un-adjudicated round blocks next exec
     references/      # per-mode protocol: implement, explore, test, ensemble (decide)
     schemas/         # per-mode strict output schemas for codex exec --output-schema
     playbooks/       # standing task-family playbooks (contract skeletons + reviewer checklists)

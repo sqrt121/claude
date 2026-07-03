@@ -69,6 +69,27 @@ genuinely contested and expensive to unwind, use decide mode (blind ensemble,
 If the user explicitly ordered delegation on a "keep"-class task, delegate anyway but
 state the classification and the risk first.
 
+## The wrapper — `bin/delegate.sh` (mechanizes Steps 2 and 4)
+
+Use the wrapper instead of hand-running the blocks below; the blocks remain the spec
+and the fallback. From the target repo:
+
+```bash
+DELEGATE="$HOME/.claude/skills/codex-delegate/bin/delegate.sh"
+"$DELEGATE" init <mode> <topic>              # state dir, baseline snapshot, preflight; prints STATE_DIR + brief path
+"$DELEGATE" exec <mode> <topic> <<'EOF'      # full flag set, per-topic naming, thread capture; prompt on stdin
+<context preamble + mode instruction block + brief pointer>
+EOF
+"$DELEGATE" append <mode> <topic> <approved|corrected|rejected|aborted> "<adjudication notes>"
+"$DELEGATE" status
+```
+
+An un-adjudicated round structurally blocks the next `exec`/`init` (`--force`
+overrides); `append` is how a round closes. Round numbers auto-increment; round ≥ 2
+resumes the stored thread automatically — except decide mode, which always gets a
+fresh thread. Prose-patching the stale-state failure didn't survive contact with live
+runs; this wrapper is the structural fix.
+
 ## Step 2 — Preflight and state (all modes)
 
 ```bash
@@ -150,7 +171,8 @@ audit trail's index):
                  "notes": "what the reviewer fixed inline / rejected / re-verified" } ] }
 ```
 
-Append one history entry per round — every round, same file, no exceptions. The notes
+Append one history entry per round — every round, same file, no exceptions (the
+wrapper's `append` enforces this: an open round blocks the next exec). The notes
 field carries adjudication detail nothing else records; a state.json that goes stale
 after round 1 was the first protocol failure observed in live use.
 
