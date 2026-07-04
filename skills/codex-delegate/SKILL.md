@@ -232,8 +232,9 @@ aborted. Implement mode leaves everything uncommitted — committing is the user
   reasoning pays; report-reading, gate re-runs, and mechanical diff review hold up at
   medium. Session effort is the user's `/effort` dial — when a long stretch of one
   kind is ahead, say so and suggest the tier. Codex's effort is pinned separately in
-  `~/.codex/config.toml`; subagents are untouched by this (user policy: opus or
-  stronger at highest available effort).
+  `~/.codex/config.toml`. Claude subagents follow the routing order in the user
+  CLAUDE.md — codex first; a Claude subagent (opus or stronger, highest effort)
+  only for harness-bound work, with the reason stated.
 
 ## Maintenance (rule budget)
 

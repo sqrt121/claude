@@ -14,6 +14,8 @@ skills/            # personal skills, symlinked into ~/.claude/skills/<name>
     playbooks/       # standing task-family playbooks (contract skeletons + reviewer checklists)
 claude-home/       # user-global files, each symlinked to ~/.claude/<name>
   CLAUDE.md              # user-global instructions
+  hooks/                 # hook scripts; wired up via ~/.claude/settings.json (machine-local, add entries by hand)
+    agent-routing-reminder.sh  # PreToolUse[Agent|Task]: non-blocking codex-first routing reminder on subagent spawns
   statusline-command.sh  # statusline (repo | branch± | model | effort | ctx% + headroom + >200k | ±lines | $ | rate windows ↻ resets)
 ```
 

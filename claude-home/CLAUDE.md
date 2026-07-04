@@ -12,6 +12,14 @@ verbose test runs, and plan-determined implementation. Keep work where the desig
 insight is the deliverable. The skill defines the full protocol; repo-local delegation
 workflows take precedence over it.
 
+Triage is not one-shot. When the task changes shape mid-session (an analysis
+surfaces implementation work, a document request becomes fixes), each newly
+surfaced work item passes the same gate before any offload. Routing offloadable
+work to a Claude subagent instead of codex is a keep-class decision — say why
+codex is not doing it. (Incident: 2026-07-04, com.zanoboo go-live — playbook
+request drifted into implementation fanned out to Opus subagents; 5h token
+window gone in ~1.5h.)
+
 ## Context
 
 I use Claude for coding and non-coding work, and my expertise varies by domain and by
@@ -60,9 +68,25 @@ When reviewing code or work, find problems first. Do not pad with positives.
 
 If I ask you to verify another model's critique, actually check the claims against the code. Do not assume the critique is valid.
 
-## Subagent Model Policy
+## Subagent & Model Routing
 
-**MANDATORY**: subagents (Agent tool, workflow agents) run on `opus` or stronger — set `model: "opus"` by default; inheriting Fable on a Fable session is fine when the subtask warrants it. Never `sonnet` or `haiku`, for any subtask, no matter how mechanical it looks. Where reasoning effort is configurable, use the highest available. This is for peace of mind about work quality; the token cost is accepted.
+Claude-plan tokens are one shared pool — an Opus subagent burns the same limit
+as Fable, at near-top weight, and my quality ranking is Fable > GPT-5.5 xhigh
+(codex) > Opus. Opus fan-out is never a savings move. (Incident: 2026-07-04,
+com.zanoboo.)
+
+Routing order for offloadable work:
+
+1. **codex-delegate** — the default for anything whose deliverable can be
+   specified without producing it. Includes exploration: one codex explore
+   round beats N Claude Explore agents.
+2. **Claude subagent** (inherit Fable, or `opus`) — only when the subtask needs
+   the Claude harness itself (MCP tools, browser/skill automation, artifacts, a
+   fork that needs session context) or genuinely parallel wall-clock a single
+   codex thread cannot deliver. State the reason codex is not doing it. The
+   decide-mode blind Opus ensemble is a deliberate exception and stays.
+3. Never `sonnet` or `haiku`, for any subtask, no matter how mechanical. Where
+   reasoning effort is configurable, use the highest available.
 
 ## Python
 
