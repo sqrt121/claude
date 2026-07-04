@@ -80,11 +80,14 @@ Routing order for offloadable work:
 1. **codex-delegate** — the default for anything whose deliverable can be
    specified without producing it. Includes exploration: one codex explore
    round beats N Claude Explore agents.
-2. **Claude subagent** (inherit Fable, or `opus`) — only when the subtask needs
-   the Claude harness itself (MCP tools, browser/skill automation, artifacts, a
-   fork that needs session context) or genuinely parallel wall-clock a single
-   codex thread cannot deliver. State the reason codex is not doing it. The
-   decide-mode blind Opus ensemble is a deliberate exception and stays.
+2. **Claude subagent** (inherit Fable, or `opus`) — no standing use case. Codex
+   has equivalent MCPs and tools (e.g. `$dev_browser` in place of the browser
+   skill), so tool access is never the reason; work that needs Fable-grade
+   judgment stays with Fable inline. Not banned — unknown unknowns — but every
+   spawn is an exception: name the thing codex structurally cannot do in that
+   instance (known examples: a fork inheriting this session's context; the
+   Agent tool itself being under test). The decide-mode blind Opus ensemble is
+   a deliberate exception and stays.
 3. Never `sonnet` or `haiku`, for any subtask, no matter how mechanical. Where
    reasoning effort is configurable, use the highest available.
 

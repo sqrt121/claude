@@ -234,7 +234,7 @@ aborted. Implement mode leaves everything uncommitted — committing is the user
   kind is ahead, say so and suggest the tier. Codex's effort is pinned separately in
   `~/.codex/config.toml`. Claude subagents follow the routing order in the user
   CLAUDE.md — codex first; a Claude subagent (opus or stronger, highest effort)
-  only for harness-bound work, with the reason stated.
+  is an exception that names what codex structurally cannot do.
 
 ## Maintenance (rule budget)
 
