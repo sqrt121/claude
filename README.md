@@ -34,6 +34,9 @@ Edit files here directly — the `~/.claude` entries are symlinks into this repo
 changes are live immediately (symlink discovery confirmed working, including mid-session
 re-scans). Commit as you go.
 
+This repo is public: no secrets, no client/work identifiers — in files or commit
+messages. Incident citations name dates and personal projects only.
+
 ## Design notes
 
 The delegation design (contract/brief templates, punch-list economics, bounded
