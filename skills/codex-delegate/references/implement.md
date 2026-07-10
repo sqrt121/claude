@@ -50,6 +50,12 @@ targets, or commands documented in AGENTS.md / CLAUDE.md / CI config. A repo wit
 conventions file AND no discoverable gates is a triage signal — the contract must carry
 everything and the savings shrink.
 
+For every contract invariant that spans a module boundary, the required-tests list must
+name at least one composition test that crosses the real seam with both sides unmocked.
+Two layers each passing their own mocked tests proved nothing when the emitter tests
+mocked the sender and the sender tests never paired the composed events — the
+composition bug shipped through green gates (2026-07-10, wake-summary loss).
+
 ## Mode instruction block (goes into the exec prompt)
 
 ```

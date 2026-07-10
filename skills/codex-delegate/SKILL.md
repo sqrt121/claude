@@ -98,8 +98,8 @@ didn't survive contact with live runs; this wrapper is the structural fix.
 ## Step 2 — Preflight and state (all modes)
 
 ```bash
-codex --version   # expect >= 0.140; exec/resume/-o/--output-schema validated on 0.140.0
-grep -E '^(model|model_reasoning_effort)' ~/.codex/config.toml   # expect gpt-5.5 / xhigh; warn if not, proceed (config.toml is the user's source of truth)
+codex --version   # expect >= 0.144: gpt-5.6-sol gets API 400 "requires a newer version of Codex" on 0.140 (2026-07-10, aborted round). Upgrade (npm i -g @openai/codex@latest, inside nvm env, never the nix shell) before exec — fail fast, don't burn a round.
+grep -E '^(model|model_reasoning_effort)' ~/.codex/config.toml   # expect gpt-5.6-sol / xhigh; config.toml is the user's source of truth for the model — but the CLI must support the pinned model, so treat a version/model mismatch as a preflight failure, not a warning
 grep '"packageManager"' "$REPO_ROOT/package.json" 2>/dev/null || echo "PM UNPINNED"  # JS repos only
 
 SKILL_DIR="$HOME/.claude/skills/codex-delegate"
@@ -139,6 +139,14 @@ Gates / Rules; the heavyweight sections earn their place when the diff is wide, 
 invariants are at stake, or a wrong choice is expensive to unwind. All briefs carry
 the mode's Rules block verbatim (commit prohibition, scope limits, read-only where it
 applies).
+
+Before finalizing an implement brief, classify every ID the contract touches as
+**identity** (names exactly one record) or **correlation** (shared across related
+records), and never pin a dedupe/idempotency decision on a correlation key. A contract
+that ordered batch dedupe "by trace_id" — a correlation key deliberately shared between
+a critical event and its summary — silently discarded the correlated events, the
+implementer followed it faithfully, and every unit gate passed (2026-07-10, wake-summary
+loss). Reviewing the diff against the contract cannot catch bugs the contract ordered.
 
 ## Step 4 — Execute
 
