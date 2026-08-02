@@ -101,7 +101,12 @@ Do not commit without my explicit consent / instruction
 
 ## Worktrees
 
-Location: `~/worktrees/<scope>/<project>/<branch>`
+If the repo ships worktree tooling (e.g. `just worktree-new`, `pnpm
+worktree:create`, `scripts/worktree-*.sh` — check the justfile/package.json
+and AGENTS.md/CLAUDE.md), use it instead of a raw `git worktree add`; it owns
+ports, env wiring, DB isolation, and teardown.
+
+Manual fallback location: `~/worktrees/<scope>/<project>/<branch>`
 
 Scopes: `personal`, `work`
 
