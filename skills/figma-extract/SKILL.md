@@ -104,6 +104,27 @@ Useful getters beyond the snippet: `figma.currentPage.selection`,
 (the TOKEN name, e.g. `backgrounds/bg-light`), `node.mainComponent.name`
 (instance → library source), `node.componentProperties` (variant props).
 
+## Attached tooling (`scripts/`)
+
+The snippet above is a minimal illustration — for real rounds use the
+attached templates instead of retyping it:
+
+- `scripts/figma-ser-v2-template.js` — the full serializer: auto-layout
+  incl. wrap/align/reverse-Z, per-side stroke weights, `effects`,
+  opacity, `visible` on every node, `textStyleId`+`fontSize` pairs,
+  fills beyond `[0]` — i.e. it already encodes rule 10's deciding
+  getters. `scripts/figma-ser-template.js` is the earlier compact
+  variant. Both are dev-browser templates: substitute the page id and
+  target frame, run via `page.evaluate`, write the JSON into the
+  project's harvest bank.
+- `scripts/outline.py <harvest.json>…` — flattens harvested trees into
+  compact indented outlines (writes `.outline.txt` next to each input);
+  read/diff outlines instead of raw JSON.
+- `scripts/pngscan.py <ref.png> <x> <y0> <y1>` — minimal PNG decoder +
+  vertical scanline dump for rule 11: settles what the API reports as
+  `mixed` or not at all (underline weights, stroke paint alpha, shadow
+  falloff).
+
 ## Hard rules (read-only law)
 
 - **Getters only.** Never call any mutating plugin API (no `node.x = …`,
