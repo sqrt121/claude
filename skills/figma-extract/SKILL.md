@@ -112,8 +112,9 @@ attached templates instead of retyping it:
 - `scripts/figma-ser-v2-template.js` — the full serializer: auto-layout
   incl. wrap/align/reverse-Z, per-side stroke weights, `effects`,
   opacity, `visible` on every node, `textStyleId`+`fontSize` pairs,
-  fills beyond `[0]` — i.e. it already encodes rule 10's deciding
-  getters. `scripts/figma-ser-template.js` is the earlier compact
+  fills beyond `[0]`, and per-instance `main` (master component name) +
+  variant props — i.e. it already encodes rule 10's and rule 16's
+  deciding getters. `scripts/figma-ser-template.js` is the earlier compact
   variant. Both are dev-browser templates: substitute the page id and
   target frame, run via `page.evaluate`, write the JSON into the
   project's harvest bank.
@@ -124,6 +125,13 @@ attached templates instead of retyping it:
   vertical scanline dump for rule 11: settles what the API reports as
   `mixed` or not at all (underline weights, stroke paint alpha, shadow
   falloff).
+- `scripts/icon-census.py <file-full.json> [board-id …]` — walks a REST
+  harvest (ancestor-visibility-checked) and prints per-board tables of
+  every visible icon instance: path, master component name resolved via
+  the `components`/`componentSets` maps, size, plus name→count
+  summaries; `--json` writes the manifest. Rule 16's sweep tool. The
+  output is a derived, per-round artifact — trusted only alongside its
+  harvest, never a maintained bank.
 
 ## Hard rules (read-only law)
 
@@ -220,6 +228,21 @@ attached templates instead of retyping it:
     1280 — the misread survived the dedicated fidelity pass (2026-07-30→31).
     For anything that could be centered, compute element-center vs
     container-center at ≥2 breakpoints and record the relationship.
+16. **Glyph identity is a NAME, never a render judgment.** Refs at page
+    scale cannot resolve a 24px glyph: a wrong icon survived a full 1:1
+    pass — eyes AND numeric layers — and was QA-caught (project-C
+    lockdown 2026-08-10: profile/book shipped for `Icon/course`/`Icon/modules`;
+    the names sat unread in the harvest the whole time). For every
+    visible icon INSTANCE in the round's scope, resolve the master
+    component name — `main` in v2-serializer output, `componentId` →
+    `components` map in a REST harvest (`scripts/icon-census.py` sweeps
+    this) — and settle identity by name comparison against the code's
+    icon atoms, recorded as a per-round identity map (design name → code
+    atom → disposition). Exports follow the map, not a stockpile: only a
+    site with no matching code atom gets its icon exported, that round,
+    as an instance per rule 9. A pre-exported SVG pile trusted across
+    rounds is the stale-asset trap; a greenfield bootstrap batch-export
+    is project setup, not maintenance.
 
 ## Output contract
 
