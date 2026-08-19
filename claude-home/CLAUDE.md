@@ -10,7 +10,9 @@ skill (modes: implement, explore, test, decide) and state the classification in 
 (delegate / spike-then-delegate / keep). Default to delegating codebase exploration,
 verbose test runs, and plan-determined implementation. Keep work where the design
 insight is the deliverable. The skill defines the full protocol; repo-local delegation
-workflows take precedence over it.
+workflows take precedence over it — but a repo workflow's "spawn a subagent" names the
+procedure for whoever executes it, and for Claude the executor is always codex
+(adversarial review = one codex round; 3× incident, gvz 2026-08-19).
 
 Triage is not one-shot. When the task changes shape mid-session (an analysis
 surfaces implementation work, a document request becomes fixes), each newly

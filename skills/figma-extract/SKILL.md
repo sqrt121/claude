@@ -243,6 +243,17 @@ attached templates instead of retyping it:
     as an instance per rule 9. A pre-exported SVG pile trusted across
     rounds is the stale-asset trap; a greenfield bootstrap batch-export
     is project setup, not maintenance.
+17. **Composition reads resolve CHILD variant identity, not just section
+    identity — and visibility is a PATH property.** Two same-set section
+    instances can host different card families via the child `Type`
+    variant or a slot swap: resolve every hosted child's master name
+    (`componentProperties` / `componentId` → components map), rule 16 one
+    level deeper (project-G homepage 2026-08-18: both Home sliders read as
+    "Teaser Slider ✓", owner caught the Type=Blog cards post-approval —
+    a dedicated redo round). Same round, same trap class: a node's
+    `visible: true` under a hidden ancestor is NOT rendered content —
+    check ancestor visibility on every inventory walk, or a hidden
+    intro/eyebrow reads as visible copy.
 
 ## Output contract
 
