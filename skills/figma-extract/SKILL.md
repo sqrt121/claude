@@ -31,6 +31,22 @@ the Akkordeon trees sat in a scratchpad flagged "may not survive reboot"
 and were rescued two days later (project-G 2026-08-02). One failed connect = stop and ask; never retry-loop
 against a stale endpoint (Chrome restarts invalidate the cached CDP GUID).
 
+**REST rate-limit escalation (429 → ASK, never park silently).** A 429
+mid-task cannot self-serve the browser path (owner-present rule above),
+but it can always ASK: the very next message to the owner leads with
+"REST is rate-limited — if you're present, say go and I'll run the
+in-browser round now"; a background retry loop is the fallback AFTER
+that ask, never the silent default. For extraction/verification tasks,
+spend one cheap REST metadata call as the turn's FIRST act — if it
+429s, request the browser connect while the owner is still at the
+prompt. Where the project ships a harvest bank, the bank is the primary
+authority and REST is non-blocking confirmation — a 429 never blocks
+the deliverable. Prefer per-node fetches with depth limits over
+full-file pulls; the file-wide JSON is what burns the budget. (2×
+gvz: sessions parked retry loops without surfacing the browser option
+and the owner had to discover it and walk over — second incident
+2026-08-21 contact prep.)
+
 1. **dev-browser attach to the user's LOGGED-IN Chrome** (`/browser` skill;
    `dev-browser --connect` with NO endpoint — the wrapper's takeover flow,
    owner approves once, one warm session). Never launch a fresh debug
